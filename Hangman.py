@@ -9,7 +9,8 @@ import random, sys
 MasterDict = {
     'Animals': ['Cow', 'Pig', 'Chicken', 'Otter'],
     'Fruits' : ['Apple', 'Pineapple', 'Banana', 'Coconut'],
-    'Cars' : ['BMW', 'Kia', 'Audi', 'Volkswagen']
+    'Cars' : ['BMW', 'Kia', 'Audi', 'Volkswagen'],
+    'Video Games' : ['Zelda', 'Mario', 'Halo', 'Metroid', 'Uncharted']
 }
 
 #TO DO: A function that stores the Hangman_Pics 
@@ -153,6 +154,7 @@ MissedLetters = []
 #The following sequence prints out the initial setup, the hangman drawing,
 #the chosen category, and the Gameword (which will be a number of underscores)
 
+print('Hangman, inspired by Al Sweigart al@inventwithpython.com \n')
 print(Hangmen[Tries])
 print('The category is: %s' % Category)
 print('Missed letters: No missed letters yet.')
