@@ -16,7 +16,7 @@ import random
 
 SecretNumber = str(random.randint(0,9)) + str(random.randint(0,9)) + str(random.randint(0,9))
 
-#This is the start of the main program, a commit example
+#And this is an example of a local change
 
 while True:
     wrong_counter = 0
@@ -25,7 +25,7 @@ while True:
 
     if PlayerNumber == SecretNumber:
         print('You got it!')
-        Break
+        break
 
     for i in range(len(PlayerNumber)):
             if PlayerNumber[i] == SecretNumber[i]:
