@@ -1,21 +1,21 @@
 #Hangman, inspired by Al Sweigart al@inventwithpython.com
 
 #Definition of modules
+import random, sys
 
-import random
+#TO DO: Define the categories and words of the game in a dictionary. 
+#Each category contains a certain number of words in it to guess by the player.
 
-#TO DO: Define the categories of the game,
-#This means then that each category contains a certain number of words in it to guess
+MasterDict = {
+    'Animals': ['Cow', 'Pig', 'Chicken', 'Otter'],
+    'Fruits' : ['Apple', 'Pineapple', 'Banana', 'Coconut'],
+    'Cars' : ['BMW', 'Kia', 'Audi', 'Volkswagen']
+}
 
-#Definition of Categories and words within categories
-Animals = ['Cow', 'Pig', 'Chicken', 'Otter']
-Fruits = ['Apple', 'Pineapple', 'Banana', 'Coconut']
-
-MasterList = [Animals, Fruits]
-
-#TO DO: The Hangman_Pics must be stored somewhere, and they must be displayed
-#to the user sequentially everytime the user misses the letter.
-#By the standard rules of hangman, the user has 7 tries before losing the game. 
+#TO DO: A function that stores the Hangman_Pics 
+#The sequential display of the hangmen pics is managed in the main game loop
+#By the standard rules of hangman, the user has 7 tries before losing the game, so there
+#are seven ASCII pictures.  The function returns a list with the stored Hangmen in each index.
 
 def HangmenInitializer():
     H1 = '''
@@ -91,129 +91,95 @@ def HangmenInitializer():
     Hangmen = [H1, H2, H3, H4, H5, H6, H7]
     return Hangmen
 
-
 #TO DO: Define a function that randomly chooses one of the categories 
-#and then randomly chooses a word from said category
+# and then randomly chooses a word from the selected category
+# The function requires a dictionary as input and returns both the 
+# chosen category and chosen word in a dictionary.
 
-#First we can use random.choice() to have a random category selected from a specific list
-#And then we can use another random.choice() to select a random word from the selected category
-#This chosen word is important because it is what guides the current game round 
+def ChooseCatAndWord(dict):
+    ChosenItems = random.choice(list(dict.items()))
+    ChosenCategory = ChosenItems[0] 
+    ChosenWord = random.choice(ChosenItems[1])
+    return {'Chosen Category' : ChosenCategory,
+            'Chosen Word':    ChosenWord}
 
-#We make ChosenCategory a global variable so that it can be called into the print function
-
-def ChooseGuessWord():
-    global ChosenCategory
-    ChosenCategory = random.choice(MasterList)
-    ChosenWord = random.choice(ChosenCategory)
-    return ChosenWord
-
-
-#TO DO: Create a function that displays a number of underscores (_ _ _) depending on the chosen guess word
-#This means this part of the program can count the number of letters in the selected word
-#And then it displays an appropiate number of underscores.
-
-#Then it stores the number of underscores into a list
-#One way to do this is to store '_ ' into a variable, and then
-#multiply that variable by the len(chosenWord) and printing it to output
-#This list is very important, since it contains the word that will mutate throughout the game sequence 
-
-def GameWordCreator(Word):
-    UnderScoredWord = list('_' * len(Word))
-    return UnderScoredWord
+#TO DO: Create a function that creates a "Gameword" element represented initially by 
+# a number of underscores (_ _ _) whose number depend on the chosen guess word.
+# The function receives as input the chosen guessword and returns 
+# a list of underscores ['_','_','_'] that correspond to the number of letters 
+# in the chosen guess word.
+# This game word is then the list that changes throughout gameplay
+ 
+def GameWordCreator(Guessword):
+    UnderscoreWord = list('_' * len(Guessword))
+    return UnderscoreWord
 
 #TO DO: Create a function that can check if a word is "complete" or not.
-#One way to do this is check if there are '_' in the UnderScoredWord, or any list like variable really
-#Then we can insert this function into a while loop, so while CheckCompletion(Word) is not True, continue
-#running the program
+#One way to do this is check if there are '_' in the GameWord, or any list like variable really
+#The function returns True if it finds underscores in the gameword. 
 
-def CheckCompletion(ListWord):
-    if '_' in ListWord:
+def CheckUnderscores(Gameword):
+    if '_' in Gameword:
         return True
 
+#TO DO: Create a function that takes in a letter chosen by the user, and then
+#  looks for it in the GuessWord, if it finds it in the guess word, 
+#  then it completes the letter in the GameWord list.
 
-#TO DO: Create a system that takes in a letter chosen by the user, and then looks for it
-#in the GuessWord, if it finds it in the guess word, then it displays just that letter
-#back to the user.
+#The word completer function takes in the Chosen GuessWord , and the PlayerLetter.
+#It runs through the guessword, checking letter by letter and mutates the GameWord list
+#depending on the player letter. 
 
-#ChosenLetter = str(input('Please input a letter\n').upper())
+def WordCompleter(Guessword, Letter):
+    UpperGuessWord = Guessword.upper()          #Transforms the guessword into all Caps
+    ListGuessWord = list(UpperGuessWord)     #transfroms the guessword into a list
+    for i in range(len(Guessword)):          #range(len(Word)) converts the thing into integers which can be iterated upon and used as indexes
+        if Letter == ListGuessWord[i]:     #This runs through every letter of the Guessword, and compares it with the ChosenLetter
+            GameWord[i] = Letter               #For every match of the chosenLetter and the letter in the GuessWord, this then edits or mutates the UnderScoredWord
 
-#if ChosenLetter in GameWord:
-    #Insert function here that completes word
 
-#After searching in the GuessWord for any letter that matches the ChosenLetter, 
-#We have to take the ChosenLetter and complete the respective spots in the UnderScoredWord
-
-
-def WordCompleter(Guessword, ChosenLetter):
-    ListWord = list(Guessword)                   #transform the GuessWord into a list,
-    for i in range(len(ListWord)):          #important! range(len(Word)) converts the thing into integers which can be iterated upon and used as indexes
-        if ChosenLetter == ListWord[i]:     #This runs through every letter of the Guessword, and compares it with the ChosenLetter
-            GameWord[i] = ChosenLetter   #For every match of the chosenLetter and the letter in the GuessWord, this then edits or mutates the UnderScoredWord
-
-#Main game loop:
+#Main game initialization, the hangmen, category, and word are chosen. GameWord is created.
 
 Hangmen = HangmenInitializer()
-GuessWord = ChooseGuessWord()
+CatAndWord = ChooseCatAndWord(MasterDict)
+Category = CatAndWord['Chosen Category']
+GuessWord = CatAndWord['Chosen Word']
 GameWord = GameWordCreator(GuessWord)
 
 #Initialize Tries and MissedLetters list
 Tries = 0
 MissedLetters = []
 
+#The following sequence prints out the initial setup, the hangman drawing,
+#the chosen category, and the Gameword (which will be a number of underscores)
+
 print(Hangmen[Tries])
-print('The category is: %s' % ChosenCategory)
+print('The category is: %s' % Category)
 print('Missed letters: No missed letters yet.')
-print(GameWord)
+print(' '.join(GameWord))
 
 #Initialize the main gain loop 
 while Tries < 7:
-    while CheckCompletion(GameWord) == True:
-        PlayerLetter = str(input('Guess a letter.\n').upper())
-        if PlayerLetter in GameWord:
-            WordCompleter(GuessWord,PlayerLetter) #WordCompleter edits a global variable
+    if CheckUnderscores(GameWord) == True:
+        PlayerLetter = str(input('Guess a letter.\n')).upper()   #The PlayerLetter is always in caps
+
+        if PlayerLetter in GuessWord.upper():     #Checks if the player letter is in the upper cased guess word
+            WordCompleter(GuessWord,PlayerLetter) #Word Completer mutates the GameWord list with the PlayerLetter
             print(Hangmen[Tries])
-            print('The category is: %s' % ChosenCategory)
+            print('The category is: %s' % Category)
             if MissedLetters == []:
                 print('Missed letters: No missed letters yet.')
             else:
                 print('Missed letters: ' + ' '.join(MissedLetters))
-            print(GameWord)
+            print(' '.join(GameWord))
         else:
-            Tries += 1
             MissedLetters.append(PlayerLetter)
             print(Hangmen[Tries])
-            print('The category is: %s' % ChosenCategory)
+            print('The category is: %s' % Category)
             print('Missed letters: ' + ' '.join(MissedLetters))
-            print(GameWord)
-    print('Congratulations you won!')
-print('Sorry you lost, try again!')
-
-            
-
-
-
-
-
-
-
-
-
-
-
-
-
-#in the else part of the program, we have to be able to print out the stages
-#of the hangman drawing in sequence, which means there must be a sort of counter
-#that is able to count the number of wrong tries you have
-#and with that counter then print the corresponding hangman drawing 
-
-
-#There must also be a way to store the new UnderScoredWord so that,
-#the next time player chooses another letter, it doesnt delete
-#the old chosen letter
-
-#The game must also recognize when the letter is complete
-
-#When the ChosenLetter check fails we have to 
-#Print out the HangmanList[TotalWrongTries]
-
+            print(' '.join(GameWord))
+            Tries += 1
+    else:
+        print('Congratulations you won! The secret word is %s' % GuessWord.upper())
+        sys.exit()
+print('Sorry you lost, try again! The secret word was %s' % GuessWord.upper())
